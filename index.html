@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chwazi - Finger Picker</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      background: #222;
+      color: white;
+      padding: 50px 10px;
+    }
+    #touchArea {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 10px;
+      margin: 20px auto;
+      max-width: 600px;
+    }
+    .finger {
+      width: 80px;
+      height: 80px;
+      background: #444;
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 20px;
+      cursor: pointer;
+      transition: background 0.3s;
+      user-select: none;
+    }
+    .selected {
+      background: #4caf50 !important;
+      color: #fff;
+    }
+    #controls {
+      margin-top: 20px;
+    }
+    button {
+      padding: 10px 20px;
+      font-size: 16px;
+      margin: 0 10px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Chwazi - Finger Picker</h1>
+  <p>Touch the screen with multiple fingers. One will be chosen automatically after 3 seconds of inactivity.</p>
+  <div id="touchArea"></div>
+  <div id="controls">
+    <button onclick="pickFinger()">Pick!</button>
+    <button onclick="resetGame()">Reset</button>
+  </div>
+
+  <script>
+    let fingerCount = 0;
+    const touchArea = document.getElementById('touchArea');
+    let inactivityTimer;
+
+    function handleTouchStart(e) {
+      e.preventDefault();
+      const touches = Array.from(e.touches);
+      resetInactivityTimer();
+
+      touchArea.innerHTML = '';
+      fingerCount = 0;
+
+      touches.forEach((touch, idx) => {
+        const finger = document.createElement('div');
+        finger.className = 'finger';
+        finger.textContent = ++fingerCount;
+        finger.dataset.identifier = touch.identifier;
+        touchArea.appendChild(finger);
+      });
+    }
+
+    function resetInactivityTimer() {
+      clearTimeout(inactivityTimer);
+      inactivityTimer = setTimeout(() => {
+        pickFinger();
+      }, 3000);
+    }
+
+    function pickFinger() {
+      const fingers = document.querySelectorAll('.finger');
+      if (fingers.length === 0) return;
+
+      const randomIndex = Math.floor(Math.random() * fingers.length);
+      fingers.forEach(f => f.classList.remove('selected'));
+      fingers[randomIndex].classList.add('selected');
+    }
+
+    function resetGame() {
+      touchArea.innerHTML = '';
+      fingerCount = 0;
+      clearTimeout(inactivityTimer);
+    }
+
+    touchArea.addEventListener('touchstart', handleTouchStart, false);
+  </script>
+</body>
+</html>
